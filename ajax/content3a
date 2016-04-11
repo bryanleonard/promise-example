@@ -1,0 +1,26 @@
+<div id="content3">
+
+<h4>Content 3</h4>
+
+<hr />
+
+<script>
+	setTimeout(function() {
+		$('.things')
+			.prepend('<p><b>Really important things for you to read.</b></p>')
+			.append('<hr />')
+			// .trigger('failure', {statusText: 'Content triggered an error'}); 
+			.trigger('complete'); 
+	}, 3000);
+
+// trigger bubbles up
+</script>
+
+<span class="things"></span>
+
+<p>Excepteur sint occaecat cupidatat non
+proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Ut enim ad minim veniam,
+quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo
+consequat.</p>
+
+</div>

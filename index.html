@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<!--[if IE 9]><html class="lt-ie10" lang="en" > <![endif]-->
+<html class="no-js" lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta http-equiv="cleartype" content="on" />
+	<title>Document</title>
+	<link rel="stylesheet" href="../assets/foundation-5.5.3/css/normalize.css">
+	<link rel="stylesheet" href="../assets/foundation-5.5.3/css/foundation.css">
+	<link href='https://fonts.googleapis.com/css?family=Roboto+Slab:400,700' rel='stylesheet' type='text/css'>
+	<link rel="stylesheet" href="../assets/app.css">
+	<script src="../assets/foundation-5.5.3/js/vendor/modernizr.js"></script>
+
+	<style>
+
+		.box {
+			border: 1px solid #ccc;
+			height: 250px;
+			max-height: 250px;
+			overflow-y: auto;
+			opacity: 1;
+		}
+	</style>
+</head>
+<body>
+
+<div class="container">
+
+	<h2>Page header</h2>
+	<hr>
+
+	<div class="row mtxxl">
+		<a href="#" class="button small radius block" id="load">Load</a>
+	</div>
+
+	<div class="row">
+		<div class="medium-4 columns box" id="span1"><p>The first span</p></div>
+		<div class="medium-4 columns box" id="span2"><p>The second span</p></div>
+		<div class="medium-4 columns box" id="span3"><p>The third span</p></div>
+	</div>
+
+	<div class="row hide messages" id="fail">
+		<p></p>
+	</div>
+
+	<div class="row mtm">
+		<a href="#" class="button small radius disabled block mtxs" id="proceed" />Proceed</a>
+	</div>
+
+	<div class="clearfix"></div>
+
+</div>
+
+<script src="../assets/jquery-1.11.3.js"></script>
+<!-- <script src="../assets/foundation-5.5.3/js/foundation.min.js"></script> -->
+<script>
+
+	//$(document).foundation();
+	// version 1
+	// $('#load').click(function() {
+	// 	$('#span1, #span2, #span3').html('Loading...');
+		
+	// 	$.when(
+	// 		$.get('ajax/content1', function(result) {
+	// 			$('#span1').html(result);
+	// 		}, 'html'),
+	// 		$.get('ajax/content2', function(result) {
+	// 			$('#span2').html(result);
+	// 		}, 'html'),
+	// 		$.get('ajax/content3', function(result) {
+	// 			$('#span3').html(result);
+	// 		}, 'html')
+	// 	)
+
+	// 	.then(function() {
+	// 		$('#proceed').removeAttr('disabled').removeClass('disabled');
+	// 	})
+	// });
+
+	// version 2
+
+	// var loadFn = function(objobjOptions) {
+	// 	if (typeof objobjOptions !== 'object') {
+	// 		objobjOptions = {}
+	// 	}
+
+	// 	objobjOptions.selector = objobjOptions.selector || '';
+	// 	objobjOptions.url = objobjOptions.url || '';
+
+	// 	return $.get(objobjOptions.url, function(result) {
+	// 		$(objobjOptions.selector).html(result);
+	// 	}, 'html');
+	// };
+
+	// $('#load').click(function() {
+	// 	$('#span1 p, #span2 p, #span3 p').text('Loading...');
+
+	// 	$.when(
+	// 		loadFn({selector: '#span1 p', url: 'ajax/content1'}),
+	// 		loadFn({selector: '#span2 p', url: 'ajax/content2'}),
+	// 		loadFn({selector: '#span3 p', url: 'ajax/content3'})
+	// 	)
+
+	// 	.then(function() {
+	// 		$('#proceed').removeAttr('disabled').removeClass('disabled');
+	// 	});
+		
+	// });
+
+	// version 3
+	// var loadFn = function(objobjOptions) {
+	// 	if (typeof objobjOptions !== 'object') {
+	// 		objobjOptions = {}
+	// 	}
+
+	// 	objobjOptions.selector = objobjOptions.selector || '';
+	// 	objobjOptions.url = objobjOptions.url || '';
+
+	// 	return $.get(objobjOptions.url, function(result) {
+	// 		$(objobjOptions.selector).html(result);
+	// 	}, 'html');
+	// };
+
+	// $('#load').click(function() {
+	// 	$('#span1 p, #span2 p, #span3 p').text('Loading...');
+
+	// 	$.when(
+	// 		loadFn({selector: '#span1 p', url: 'ajax/content1'}),
+	// 		loadFn({selector: '#span2 p', url: 'ajax/content2'}),
+	// 		loadFn({selector: '#span3 p', url: 'ajax/content3'})
+	// 	)
+
+	// 	.promise()
+
+	// 	.done(function() {
+	// 		$('#proceed').removeAttr('disabled').removeClass('disabled');
+	// 	})
+
+	// 	.fail(function(result) {
+	// 		$('#fail p').text(result.statusText + " " + result.status + " - ");
+	// 		$('#fail').show();
+	// 	})
+
+	// 	.always(function() {
+	// 		$('#fail p').append('Done');
+	// 		$('#fail').show();
+	// 	});
+		
+	// });
+
+	// version 4
+	// Using load with a modified get to return a promise
+	var showMessage = function(objOptions) {
+		if (typeof objOptions !== 'object') {
+			objOptions = {message: 'Parameter not an object', error: true}
+		}
+
+		objOptions.message = objOptions.message || '';
+		objOptions.error = objOptions.error || false;
+
+		$('.messages')
+			.append((objOptions.error) ? 'Error: ' : '')
+			.append(objOptions.message)
+			.append('<br />');
+	};
+
+
+	var loadFn = function(objOptions) {
+		var defer = $.Deferred(),
+			$div, msg;
+
+		if (typeof objOptions !== 'object') {
+			msg = 'Expecting parameter object';
+			showMessage({message: msg, error: true});
+			return defer.resolve({statusText: msg});
+			// return defer.reject({statusText: msg});
+		}
+
+		objOptions.selector = objOptions.selector || '';
+		objOptions.url = objOptions.url || '';
+		objOptions.dynamic = objOptions.dynamic || false;
+
+		if (objOptions.url === '') {
+			msg = 'Missing URL';
+			showMessage({message: msg, error: true});
+			return defer.resolve({statusText: msg});
+			// return defer.reject({statusText: msg});
+		}
+
+		$div = $(objOptions.selector);
+
+		if ($div.length > 0) {
+			$.get(objOptions.url, function() {}, 'html')
+				.done(function(result) {
+					$div.html(result);
+					if (!objOptions.dynamic) {
+						defer.resolve();
+					}
+				})
+				.fail(function(result) {
+					msg = 'Could not load URL: ' + objOptions.url;
+					showMessage({message: msg, error: true});
+					defer.resolve(result);
+					// defer.reject(result);
+				});
+
+			if (objOptions.dynamic) {
+				// Remove handlers in case user gets fidgety
+				$div.off('complete,failure')
+					.on('complete', function(event) {
+						defer.resolve();
+					})
+					.on('failure', function(event, result) {
+						msg = 'Dynamic content: ' + result.statusText;
+						showMessage({message: msg, error: true});
+						defer.resolve({statusText: msg});
+						// defer.reject({statusText: msg});
+					})
+			}
+		}
+		else {
+			msg = 'Error in selector';
+			showMessage({message: msg, error: true});
+			defer.resolve({statusText: 'Error in selector'})
+			// defer.reject({statusText: 'Error in selector'})
+		}
+
+		return defer.promise();
+	};
+
+	$('#load').click(function() {
+		$('#span1 p, #span2 p, #span3 p').text('Loading...');
+
+		$.when(
+			showMessage({message: 'Starting processing...'}),
+			loadFn({selector: '#span1 p', url: 'ajax/content1a', dynamic: true}),
+			loadFn({selector: '#span2 p', url: 'ajax/content2'}),
+			loadFn({selector: '#span3 p', url: 'ajax/content3a', dynamic: true}),
+			showMessage({message: 'Done processing.'})
+		)
+
+		.done(function() {})
+
+		.fail(function(result) {
+			$('#fail p').text('Result: ' + result.statusText + '<br />');
+			$('#fail').show();
+		})
+
+		.always(function() {
+			$('#fail p').append('Done');
+			$('#fail').show();
+
+			$('#proceed').removeAttr('disabled').removeClass('disabled');
+		});
+		
+	});
+
+	// 8:50
+
+</script>
+	
+</body>
+</html>
